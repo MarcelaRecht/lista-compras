@@ -3,254 +3,545 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lista da Familia</title>
+  <title>🛒 Lista da Família</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f4f8; min-height: 100vh; color: #1a202c; }
-    header { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 18px 16px 12px; text-align: center; box-shadow: 0 2px 10px rgba(99,102,241,0.3); }
+
+    header {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white; padding: 18px 16px 12px; text-align: center;
+      box-shadow: 0 2px 10px rgba(99,102,241,0.3);
+    }
     header h1 { font-size: 1.45rem; font-weight: 700; }
     header p { font-size: 0.78rem; opacity: 0.85; margin-top: 3px; }
-    .config-banner { background: #fef3c7; border-bottom: 2px solid #fcd34d; padding: 10px 16px; text-align: center; font-size: 0.82rem; color: #92400e; }
+
+    .config-banner {
+      background: #fef3c7; border-bottom: 2px solid #fcd34d;
+      padding: 10px 16px; text-align: center;
+      font-size: 0.82rem; color: #92400e;
+    }
     .config-banner a { color: #b45309; font-weight: 700; text-decoration: underline; cursor: pointer; }
     .config-banner.hidden { display: none; }
-    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 16px;
+    }
     .modal-bg.hidden { display: none; }
-    .modal { background: white; border-radius: 18px; padding: 24px; max-width: 420px; width: 100%; box-shadow: 0 8px 30px rgba(0,0,0,0.18); }
+    .modal {
+      background: white; border-radius: 18px; padding: 24px;
+      max-width: 420px; width: 100%; box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+    }
     .modal h2 { font-size: 1.1rem; margin-bottom: 6px; }
     .modal p { font-size: 0.84rem; color: #64748b; margin-bottom: 16px; }
     .modal label { font-size: 0.82rem; font-weight: 600; color: #374151; display: block; margin-bottom: 4px; }
-    .modal input { width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.9rem; margin-bottom: 12px; outline: none; }
+    .modal input {
+      width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0;
+      border-radius: 10px; font-size: 0.9rem; margin-bottom: 12px; outline: none;
+    }
     .modal input:focus { border-color: #6366f1; }
-    .modal .btn-save { width: 100%; padding: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; }
-    .modal .btn-skip { width: 100%; padding: 10px; background: none; border: none; color: #94a3b8; font-size: 0.85rem; cursor: pointer; margin-top: 8px; }
-    .tabs { display: flex; overflow-x: auto; background: white; border-bottom: 2px solid #e2e8f0; scrollbar-width: none; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+    .modal .btn-save {
+      width: 100%; padding: 12px; background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      color: white; border: none; border-radius: 12px; font-size: 1rem;
+      font-weight: 700; cursor: pointer;
+    }
+    .modal .btn-skip {
+      width: 100%; padding: 10px; background: none; border: none;
+      color: #94a3b8; font-size: 0.85rem; cursor: pointer; margin-top: 8px;
+    }
+
+    .tabs {
+      display: flex; overflow-x: auto; background: white;
+      border-bottom: 2px solid #e2e8f0; scrollbar-width: none;
+      position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
     .tabs::-webkit-scrollbar { display: none; }
-    .tab-btn { flex: 1; min-width: 80px; padding: 12px 8px 10px; border: none; background: none; cursor: pointer; font-size: 0.72rem; font-weight: 600; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 3px; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .tab-btn {
+      flex: 1; min-width: 80px; padding: 12px 8px 10px;
+      border: none; background: none; cursor: pointer;
+      font-size: 0.72rem; font-weight: 600; color: #64748b;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      border-bottom: 3px solid transparent; transition: all 0.2s;
+    }
     .tab-btn .icon { font-size: 1.3rem; }
     .tab-btn.active { color: #6366f1; border-bottom-color: #6366f1; background: #fafafe; }
-    .tab-btn .badge { background: #ef4444; color: white; border-radius: 10px; font-size: 0.65rem; padding: 1px 5px; font-weight: 700; min-width: 16px; text-align: center; }
+    .tab-btn .badge {
+      background: #ef4444; color: white; border-radius: 10px;
+      font-size: 0.65rem; padding: 1px 5px; font-weight: 700;
+      min-width: 16px; text-align: center;
+    }
     .tab-btn .badge.hidden { visibility: hidden; }
+
     .main { max-width: 540px; margin: 0 auto; padding: 16px; }
-    .sync-bar { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #94a3b8; margin-bottom: 12px; }
-    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; transition: background 0.3s; }
+
+    .sync-bar {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; color: #94a3b8; margin-bottom: 12px;
+    }
+    .sync-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #94a3b8;
+      flex-shrink: 0; transition: background 0.3s;
+    }
     .sync-dot.ok { background: #22c55e; }
     .sync-dot.err { background: #ef4444; }
     .sync-dot.loading { background: #f59e0b; animation: pulse 1s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
     .add-form { display: flex; gap: 8px; margin-bottom: 16px; }
-    .add-form input { flex: 1; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background: white; }
+    .add-form input {
+      flex: 1; padding: 12px 14px; border: 2px solid #e2e8f0;
+      border-radius: 12px; font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s; background: white;
+    }
     .add-form input:focus { border-color: #6366f1; }
     .add-form input::placeholder { color: #a0aec0; }
-    .add-form select { padding: 12px 8px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.85rem; outline: none; background: white; color: #4a5568; cursor: pointer; max-width: 110px; }
+    .add-form select {
+      padding: 12px 8px; border: 2px solid #e2e8f0; border-radius: 12px;
+      font-size: 0.85rem; outline: none; background: white;
+      color: #4a5568; cursor: pointer; max-width: 110px;
+    }
     .add-form select:focus { border-color: #6366f1; }
-    .btn-add { padding: 12px 16px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; border: none; border-radius: 12px; font-size: 1.2rem; cursor: pointer; font-weight: 700; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 2px 8px rgba(99,102,241,0.35); }
+    .btn-add {
+      padding: 12px 16px; background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      color: white; border: none; border-radius: 12px; font-size: 1.2rem;
+      cursor: pointer; font-weight: 700; transition: opacity 0.2s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(99,102,241,0.35);
+    }
     .btn-add:active { opacity: 0.85; transform: scale(0.96); }
-    .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin: 18px 0 8px; }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #94a3b8; margin: 18px 0 8px;
+    }
     .list { display: flex; flex-direction: column; gap: 8px; }
-    .item { background: white; border-radius: 12px; padding: 13px 14px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); animation: fadeIn 0.22s ease; }
+
+    .item {
+      background: white; border-radius: 12px; padding: 13px 14px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      animation: fadeIn 0.22s ease;
+    }
     @keyframes fadeIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:none} }
     .item.done { opacity: 0.5; }
     .item.done .item-name { text-decoration: line-through; color: #94a3b8; }
-    .item-check { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid #cbd5e1; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; background: white; }
+
+    .item-check {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2.5px solid #cbd5e1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.2s; background: white;
+    }
     .item.done .item-check { background: #22c55e; border-color: #22c55e; color: white; font-size: 0.8rem; }
+
     .item-info { flex: 1; min-width: 0; }
     .item-name { font-size: 0.95rem; font-weight: 500; }
     .item-cat { font-size: 0.72rem; color: #94a3b8; margin-top: 1px; }
     .cat-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; }
+
     .item-qty { display: flex; align-items: center; gap: 6px; }
-    .qty-btn { width: 24px; height: 24px; border: 1.5px solid #e2e8f0; background: #f8fafc; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 700; color: #4a5568; display: flex; align-items: center; justify-content: center; }
+    .qty-btn {
+      width: 24px; height: 24px; border: 1.5px solid #e2e8f0;
+      background: #f8fafc; border-radius: 6px; cursor: pointer;
+      font-size: 1rem; font-weight: 700; color: #4a5568;
+      display: flex; align-items: center; justify-content: center;
+    }
     .qty-btn:active { background: #e2e8f0; }
     .qty-num { font-size: 0.9rem; font-weight: 600; min-width: 18px; text-align: center; }
+
     .btn-del { background: none; border: none; cursor: pointer; color: #fca5a5; font-size: 1.1rem; padding: 4px; border-radius: 6px; }
     .btn-del:hover { color: #ef4444; }
+
     .empty { text-align: center; padding: 40px 20px; color: #a0aec0; font-size: 0.9rem; }
     .empty .big { font-size: 2.5rem; margin-bottom: 8px; }
+
     .stats { display: flex; gap: 10px; margin-bottom: 14px; }
     .stat-card { flex: 1; background: white; border-radius: 12px; padding: 10px 12px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .stat-card .num { font-size: 1.4rem; font-weight: 800; color: #6366f1; }
     .stat-card .lbl { font-size: 0.65rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
     .progress-bar { background: #e2e8f0; border-radius: 99px; height: 6px; margin-bottom: 16px; overflow: hidden; }
     .progress-fill { background: linear-gradient(90deg,#6366f1,#22c55e); height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+
     .actions { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
-    .btn-telegram { width: 100%; padding: 14px; background: linear-gradient(135deg, #2AABEE, #229ED9); color: white; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 3px 10px rgba(42,171,238,0.35); transition: opacity 0.2s, transform 0.1s; }
+
+    .btn-telegram {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #2AABEE, #229ED9);
+      color: white; border: none; border-radius: 14px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 10px; text-decoration: none;
+      box-shadow: 0 3px 10px rgba(42,171,238,0.35); transition: opacity 0.2s, transform 0.1s;
+    }
     .btn-telegram:active { opacity: 0.85; transform: scale(0.98); }
-    .btn-copy { width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 3px 10px rgba(99,102,241,0.3); transition: opacity 0.2s, transform 0.1s; }
+
+    .btn-copy {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white; border: none; border-radius: 14px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; display: flex; align-items: center;
+      justify-content: center; gap: 10px;
+      box-shadow: 0 3px 10px rgba(99,102,241,0.3); transition: opacity 0.2s, transform 0.1s;
+    }
     .btn-copy:active { opacity: 0.85; transform: scale(0.98); }
-    .btn-secondary { width: 100%; padding: 12px; background: white; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: #64748b; transition: background 0.2s; }
+
+    .btn-secondary {
+      width: 100%; padding: 12px; background: white; border: 2px solid #e2e8f0;
+      border-radius: 14px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; color: #64748b; transition: background 0.2s;
+    }
     .btn-clear { border-color: #fecaca; color: #ef4444; }
     .btn-clear:hover { background: #fff5f5; }
     .btn-settings { color: #6366f1; border-color: #e0e7ff; }
     .btn-settings:hover { background: #f5f3ff; }
-    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a202c; color: white; padding: 10px 20px; border-radius: 99px; font-size: 0.88rem; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 999; white-space: nowrap; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #1a202c; color: white; padding: 10px 20px;
+      border-radius: 99px; font-size: 0.88rem; font-weight: 500;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      z-index: 999; white-space: nowrap;
+    }
     .toast.show { opacity: 1; }
+
+    /* Telegram icon SVG */
     .tg-icon { width: 22px; height: 22px; fill: white; flex-shrink: 0; }
   </style>
 </head>
 <body>
-<div class="config-banner hidden" id="configBanner">Configure o armazenamento em nuvem para sincronizar entre dispositivos. <a onclick="openModal()">Configurar agora</a></div>
-<div class="modal-bg hidden" id="modalBg">
+
+<div class="config-banner" id="configBanner">
+  ⚙️ Configure o armazenamento em nuvem para sincronizar entre dispositivos.
+  <a onclick="openModal()">Configurar agora</a>
+</div>
+
+<div class="modal-bg" id="modalBg">
   <div class="modal">
-    <h2>Configurar sincronizacao</h2>
-    <p>Cole as chaves do JSONBin.io para salvar a lista na nuvem e sincronizar com o bot do Telegram.</p>
-    <label>Bin ID</label><input type="text" id="inputBinId" placeholder="Ex: 6650abc123..." />
-    <label>Master Key</label><input type="text" id="inputApiKey" placeholder="Ex: 2a10..." />
-    <button class="btn-save" onclick="saveConfig()">Salvar e conectar</button>
-    <button class="btn-skip" onclick="closeModal()">Usar sem nuvem (so neste dispositivo)</button>
+    <h2>⚙️ Configurar sincronização</h2>
+    <p>Cole as chaves do <strong>JSONBin.io</strong> para salvar a lista na nuvem e sincronizar com o bot do Telegram.</p>
+    <label>Bin ID</label>
+    <input type="text" id="inputBinId" placeholder="Ex: 6650abc123..." />
+    <label>Master Key</label>
+    <input type="text" id="inputApiKey" placeholder="Ex: $2a$10$..." />
+    <button class="btn-save" onclick="saveConfig()">💾 Salvar e conectar</button>
+    <button class="btn-skip" onclick="closeModal()">Usar sem nuvem (só neste dispositivo)</button>
   </div>
 </div>
-<header><h1>Lista da Familia</h1><p>Sincroniza com o bot do Telegram - Atualiza em tempo real</p></header>
+
+<header>
+  <h1>🛒 Lista da Família</h1>
+  <p>Sincroniza com o bot do Telegram • Atualiza em tempo real</p>
+</header>
+
 <div class="tabs" id="tabs"></div>
+
 <div class="main">
-  <div class="sync-bar"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">Carregando...</span></div>
+  <div class="sync-bar">
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncLabel">Carregando...</span>
+  </div>
+
   <div class="stats" id="stats"></div>
   <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
   <div class="add-form">
     <input type="text" id="newItem" placeholder="Adicionar item..." maxlength="80" />
     <select id="catSelect"></select>
-    <button class="btn-add" onclick="addItem()">+</button>
+    <button class="btn-add" onclick="addItem()">＋</button>
   </div>
+
   <div id="listContainer"></div>
+
   <div class="actions">
-    <a class="btn-telegram" id="telegramLink" href="#" target="_blank">Abrir bot no Telegram</a>
-    <button class="btn-copy" onclick="copyList()">Copiar lista formatada</button>
-    <button class="btn-secondary btn-clear" onclick="clearDone()">Remover itens comprados</button>
-    <button class="btn-secondary btn-settings" onclick="openModal()">Configurar sincronizacao</button>
+    <a class="btn-telegram" id="telegramLink" href="#" target="_blank">
+      <svg class="tg-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.27 13.767l-2.946-.924c-.64-.203-.658-.64.135-.954l11.566-4.462c.537-.194 1.006.131.869.794z"/>
+      </svg>
+      Abrir bot no Telegram
+    </a>
+
+    <button class="btn-copy" onclick="copyList()">
+      📋 Copiar lista formatada
+    </button>
+
+    <button class="btn-secondary btn-clear" onclick="clearDone()">🗑 Remover itens comprados</button>
+    <button class="btn-secondary btn-settings" onclick="openModal()">⚙️ Configurar sincronização</button>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
+
 <script>
 const CATEGORIES = [
-  { id: 'mercado',  label: 'Mercado',  icon: '&#x1F966;', color: '#22c55e' },
-  { id: 'farmacia', label: 'Farmacia', icon: '&#x1F48A;', color: '#3b82f6' },
-  { id: 'casa',     label: 'Casa',     icon: '&#x1F3E0;', color: '#f59e0b' },
-  { id: 'online',   label: 'Online',   icon: '&#x1F6CD;', color: '#f97316' },
+  { id: 'mercado',  label: 'Mercado',  icon: '🥦', color: '#22c55e' },
+  { id: 'farmacia', label: 'Farmácia', icon: '💊', color: '#3b82f6' },
+  { id: 'casa',     label: 'Casa',     icon: '🏠', color: '#f59e0b' },
+  { id: 'online',   label: 'Online',   icon: '🛍️', color: '#f97316' },
 ];
+
 let activeTab = 'all';
 let items = [];
 let useCloud = false;
+// ─── Credenciais pré-configuradas ───
 const _DEFAULT_BIN = '6a01d8a8c0954111d8094f74';
 const _DEFAULT_KEY = '$2a$10$IVUwnP8F6lc7irOD3oUR7exG3hNXzxrE3d5zqWR0YoI41i4rKi7ta';
 if (!localStorage.getItem('jb_bin_id')) localStorage.setItem('jb_bin_id', _DEFAULT_BIN);
 if (!localStorage.getItem('jb_api_key')) localStorage.setItem('jb_api_key', _DEFAULT_KEY);
+
 let JSONBIN_BIN_ID  = localStorage.getItem('jb_bin_id')  || _DEFAULT_BIN;
 let JSONBIN_API_KEY = localStorage.getItem('jb_api_key') || _DEFAULT_KEY;
+let TELEGRAM_BOT    = localStorage.getItem('tg_bot')     || 'Compras_familia_recht_bot';
+
+// ─── Modal ───
 function openModal() { document.getElementById('modalBg').classList.remove('hidden'); }
 function closeModal() { document.getElementById('modalBg').classList.add('hidden'); }
+
 function saveConfig() {
   const bid = document.getElementById('inputBinId').value.trim();
   const key = document.getElementById('inputApiKey').value.trim();
-  if (!bid || !key) { showToast('Preencha os dois campos!'); return; }
-  JSONBIN_BIN_ID = bid; JSONBIN_API_KEY = key;
-  localStorage.setItem('jb_bin_id', bid); localStorage.setItem('jb_api_key', key);
-  closeModal(); init();
+  if (!bid || !key) { showToast('⚠️ Preencha os dois campos!'); return; }
+  JSONBIN_BIN_ID  = bid;
+  JSONBIN_API_KEY = key;
+  localStorage.setItem('jb_bin_id',  bid);
+  localStorage.setItem('jb_api_key', key);
+  closeModal();
+  init();
 }
+
+// ─── Toast ───
 function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent = msg;
-  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
 }
+
+// ─── Sync status ───
 function setSyncStatus(state, label) {
   document.getElementById('syncDot').className = 'sync-dot ' + state;
   document.getElementById('syncLabel').textContent = label;
 }
+
+// ─── JSONBin ───
 async function cloudGet() {
-  const r = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', { headers: { 'X-Master-Key': JSONBIN_API_KEY } });
+  const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+  });
   if (!r.ok) throw new Error();
-  const d = await r.json(); return d.record.items || [];
+  const d = await r.json();
+  return d.record.items || [];
 }
+
 async function cloudSave(its) {
-  const r = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID, { method: 'PUT', headers: { 'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ items: its }) });
+  const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+    method: 'PUT',
+    headers: { 'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: its })
+  });
   if (!r.ok) throw new Error();
 }
+
 async function save() {
-  if (useCloud) { setSyncStatus('loading', 'Salvando...'); try { await cloudSave(items); setSyncStatus('ok', 'Sincronizado'); } catch { setSyncStatus('err', 'Erro ao salvar'); } }
-  else { localStorage.setItem('lista_familia', JSON.stringify(items)); }
-}
-async function init() {
-  buildSelect(); updateTelegramLink();
-  if (JSONBIN_BIN_ID && JSONBIN_API_KEY) {
-    useCloud = true; document.getElementById('configBanner').classList.add('hidden');
-    setSyncStatus('loading', 'Conectando a nuvem...');
-    try { items = await cloudGet(); setSyncStatus('ok', 'Sincronizado'); }
-    catch { setSyncStatus('err', 'Erro ao conectar - dados locais'); items = JSON.parse(localStorage.getItem('lista_familia') || '[]'); useCloud = false; }
+  if (useCloud) {
+    setSyncStatus('loading', 'Salvando...');
+    try {
+      await cloudSave(items);
+      setSyncStatus('ok', 'Sincronizado ✓');
+    } catch {
+      setSyncStatus('err', 'Erro ao salvar na nuvem');
+    }
   } else {
-    useCloud = false; items = JSON.parse(localStorage.getItem('lista_familia') || '[]');
-    setSyncStatus('', 'Armazenamento local');
+    localStorage.setItem('lista_familia', JSON.stringify(items));
+  }
+}
+
+// ─── Init ───
+async function init() {
+  buildSelect();
+  updateTelegramLink();
+
+  if (JSONBIN_BIN_ID && JSONBIN_API_KEY) {
+    useCloud = true;
+    document.getElementById('configBanner').classList.add('hidden');
+    setSyncStatus('loading', 'Conectando à nuvem...');
+    try {
+      items = await cloudGet();
+      setSyncStatus('ok', 'Sincronizado ✓');
+    } catch {
+      setSyncStatus('err', 'Erro ao conectar — usando dados locais');
+      items = JSON.parse(localStorage.getItem('lista_familia') || '[]');
+      useCloud = false;
+    }
+  } else {
+    useCloud = false;
+    items = JSON.parse(localStorage.getItem('lista_familia') || '[]');
+    setSyncStatus('', 'Armazenamento local (sem nuvem)');
+    document.getElementById('inputBinId').value  = JSONBIN_BIN_ID;
+    document.getElementById('inputApiKey').value = JSONBIN_API_KEY;
     if (!JSONBIN_BIN_ID) openModal();
   }
   render();
 }
+
 function updateTelegramLink() {
-  const bot = 'Compras_familia_recht_bot';
+  const bot = localStorage.getItem('tg_bot') || '';
   const link = document.getElementById('telegramLink');
-  link.href = 'https://t.me/' + bot;
+  link.href = bot ? `https://t.me/${bot.replace('@','')}` : '#';
+  if (!bot) {
+    link.title = 'Configure o bot do Telegram no guia de configuração';
+  }
 }
-function render() { document.getElementById('tabs').innerHTML = ''; buildTabs(); buildStats(); buildList(); }
+
+// ─── Render ───
+function render() {
+  document.getElementById('tabs').innerHTML = '';
+  buildTabs();
+  buildStats();
+  buildList();
+}
+
 function buildTabs() {
   const container = document.getElementById('tabs');
   const makeBtn = (id, icon, label, count) => {
     const btn = document.createElement('button');
     btn.className = 'tab-btn' + (activeTab === id ? ' active' : '');
     const badge = count > 0 ? count : '';
-    btn.innerHTML = '<span class="icon">' + icon + '</span><span>' + label + '</span><span class="badge' + (badge ? '' : ' hidden') + '">' + badge + '</span>';
+    btn.innerHTML = `<span class="icon">${icon}</span><span>${label}</span><span class="badge${badge ? '' : ' hidden'}">${badge}</span>`;
     btn.onclick = () => { activeTab = id; render(); };
     container.appendChild(btn);
   };
-  makeBtn('all', '&#x1F6D2;', 'Tudo', items.filter(i => !i.done).length);
+  makeBtn('all', '🛒', 'Tudo', items.filter(i => !i.done).length);
   CATEGORIES.forEach(c => makeBtn(c.id, c.icon, c.label, items.filter(i => i.cat === c.id && !i.done).length));
 }
+
 function buildStats() {
   const total = items.length, done = items.filter(i => i.done).length;
   const pct = total === 0 ? 0 : Math.round((done / total) * 100);
   document.getElementById('progress').style.width = pct + '%';
-  document.getElementById('stats').innerHTML = '<div class="stat-card"><div class="num">' + total + '</div><div class="lbl">Total</div></div><div class="stat-card"><div class="num">' + done + '</div><div class="lbl">Comprados</div></div><div class="stat-card"><div class="num">' + pct + '%</div><div class="lbl">Progresso</div></div>';
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="lbl">Total</div></div>
+    <div class="stat-card"><div class="num">${done}</div><div class="lbl">Comprados</div></div>
+    <div class="stat-card"><div class="num">${pct}%</div><div class="lbl">Progresso</div></div>`;
 }
+
 function buildList() {
-  const container = document.getElementById('listContainer'); container.innerHTML = '';
+  const container = document.getElementById('listContainer');
+  container.innerHTML = '';
   const filtered = activeTab === 'all' ? items : items.filter(i => i.cat === activeTab);
-  const pending = filtered.filter(i => !i.done); const done = filtered.filter(i => i.done);
-  if (!filtered.length) { container.innerHTML = '<div class="empty"><div class="big">&#x2728;</div>Nenhum item aqui ainda.<br>Adicione algo acima!</div>'; return; }
+  const pending = filtered.filter(i => !i.done);
+  const done    = filtered.filter(i => i.done);
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty"><div class="big">✨</div>Nenhum item aqui ainda.<br>Adicione algo acima!</div>`;
+    return;
+  }
+
   const renderGroup = (group, label) => {
     if (!group.length) return;
-    const sec = document.createElement('div'); sec.className = 'section-label'; sec.textContent = label; container.appendChild(sec);
-    const list = document.createElement('div'); list.className = 'list';
+    const sec = document.createElement('div');
+    sec.className = 'section-label';
+    sec.textContent = label;
+    container.appendChild(sec);
+    const list = document.createElement('div');
+    list.className = 'list';
     group.forEach(item => {
       const cat = CATEGORIES.find(c => c.id === item.cat) || CATEGORIES[0];
-      const el = document.createElement('div'); el.className = 'item' + (item.done ? ' done' : '');
-      el.innerHTML = '<div class="item-check" onclick="toggleDone('' + item.id + '')">' + (item.done ? '&#x2713;' : '') + '</div><div class="item-info"><div class="item-name">' + item.name + '</div><div class="item-cat"><span class="cat-dot" style="background:' + cat.color + '"></span>' + cat.label + '</div></div><div class="item-qty"><button class="qty-btn" onclick="changeQty('' + item.id + '',-1)">-</button><span class="qty-num">' + (item.qty || 1) + '</span><button class="qty-btn" onclick="changeQty('' + item.id + '',1)">+</button></div><button class="btn-del" onclick="deleteItem('' + item.id + '')">x</button>';
+      const el = document.createElement('div');
+      el.className = 'item' + (item.done ? ' done' : '');
+      el.innerHTML = `
+        <div class="item-check" onclick="toggleDone('${item.id}')">${item.done ? '✓' : ''}</div>
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-cat"><span class="cat-dot" style="background:${cat.color}"></span>${cat.label}</div>
+        </div>
+        <div class="item-qty">
+          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+          <span class="qty-num">${item.qty || 1}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}',1)">＋</button>
+        </div>
+        <button class="btn-del" onclick="deleteItem('${item.id}')">✕</button>`;
       list.appendChild(el);
     });
     container.appendChild(list);
   };
-  renderGroup(pending, 'A comprar'); renderGroup(done, 'Comprados');
+
+  renderGroup(pending, '📋 A comprar');
+  renderGroup(done, '✅ Comprados');
 }
+
+// ─── Actions ───
 async function addItem() {
-  const input = document.getElementById('newItem'); const name = input.value.trim();
+  const input = document.getElementById('newItem');
+  const name = input.value.trim();
   if (!name) { input.focus(); return; }
   const cat = document.getElementById('catSelect').value;
   items.unshift({ id: Date.now().toString(), name, cat, qty: 1, done: false });
-  input.value = ''; input.focus(); render(); await save(); showToast('Item adicionado!');
+  input.value = '';
+  input.focus();
+  render();
+  await save();
+  showToast('✅ Item adicionado!');
 }
-async function toggleDone(id) { const item = items.find(i => i.id === id); if (item) { item.done = !item.done; render(); await save(); } }
-async function changeQty(id, delta) { const item = items.find(i => i.id === id); if (item) { item.qty = Math.max(1, (item.qty || 1) + delta); render(); await save(); } }
-async function deleteItem(id) { items = items.filter(i => i.id !== id); render(); await save(); showToast('Item removido'); }
-async function clearDone() { const count = items.filter(i => i.done).length; if (!count) { showToast('Nenhum item comprado'); return; } items = items.filter(i => !i.done); render(); await save(); showToast(count + ' item(s) removido(s)'); }
-function buildSelect() { document.getElementById('catSelect').innerHTML = CATEGORIES.map(c => '<option value="' + c.id + '">' + c.icon + ' ' + c.label + '</option>').join(''); }
+
+async function toggleDone(id) {
+  const item = items.find(i => i.id === id);
+  if (item) { item.done = !item.done; render(); await save(); }
+}
+
+async function changeQty(id, delta) {
+  const item = items.find(i => i.id === id);
+  if (item) { item.qty = Math.max(1, (item.qty || 1) + delta); render(); await save(); }
+}
+
+async function deleteItem(id) {
+  items = items.filter(i => i.id !== id);
+  render(); await save();
+  showToast('🗑 Item removido');
+}
+
+async function clearDone() {
+  const count = items.filter(i => i.done).length;
+  if (!count) { showToast('Nenhum item comprado para remover'); return; }
+  items = items.filter(i => !i.done);
+  render(); await save();
+  showToast(`🧹 ${count} item(s) removido(s)`);
+}
+
+function buildSelect() {
+  document.getElementById('catSelect').innerHTML =
+    CATEGORIES.map(c => `<option value="${c.id}">${c.icon} ${c.label}</option>`).join('');
+}
+
 function copyList() {
   const pending = items.filter(i => !i.done);
   if (!pending.length) { showToast('Nenhum item pendente!'); return; }
-  let text = 'Lista de Compras da Familia
-
-';
-  CATEGORIES.forEach(cat => { const its = pending.filter(i => i.cat === cat.id); if (!its.length) return; text += cat.label + '
-'; its.forEach(i => { text += '  - ' + i.name + (i.qty > 1 ? ' (x' + i.qty + ')' : '') + '
-'; }); text += '
-'; });
-  text += 'Total: ' + pending.length + ' item(s) pendente(s)';
-  navigator.clipboard.writeText(text).then(() => showToast('Lista copiada!')).catch(() => showToast('Erro ao copiar'));
+  let text = '🛒 Lista de Compras da Família\n\n';
+  CATEGORIES.forEach(cat => {
+    const its = pending.filter(i => i.cat === cat.id);
+    if (!its.length) return;
+    text += `${cat.icon} ${cat.label}\n`;
+    its.forEach(i => { text += `  • ${i.name}${i.qty > 1 ? ` (x${i.qty})` : ''}\n`; });
+    text += '\n';
+  });
+  text += `Total: ${pending.length} item(s) pendente(s)`;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Lista copiada!')).catch(() => showToast('Erro ao copiar'));
 }
+
 document.getElementById('newItem').addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
-setInterval(async () => { if (!useCloud) return; try { items = await cloudGet(); render(); setSyncStatus('ok', 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})); } catch {} }, 30000);
+
+// ─── Auto-refresh a cada 30s ───
+setInterval(async () => {
+  if (!useCloud) return;
+  try {
+    items = await cloudGet();
+    render();
+    setSyncStatus('ok', 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}));
+  } catch {}
+}, 30000);
+
 init();
 </script>
 </body>
-    </html>
+</html>
